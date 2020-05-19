@@ -65,6 +65,126 @@
         </div>
       </div>
     </div>
+
+    <!-- page2 导读 -->
+    <div :class="!isPrintPage && 'shadow mt10'" v-if="pageInfo.settings.guideText">
+      <div class="pa page2">
+        <div class="page2-h">
+          <Header :options="headerInfo" />
+        </div>
+        <div class="page2-b">
+          <div class="mt50 mb50 f64 c0 b">导读</div>
+          <div
+            class="mb50 f32 b"
+          >尊敬的{{pageInfo.report.userName}}{{pageInfo.report.gender | gender('salutation')}}：</div>
+          <div class="mb50 f20">请您认真阅读本体检报告，如果您对本报告的检查结果有不明之处或有异议，请及时与我们联系</div>
+          <div class="pre f20" v-html="pageInfo.settings.guideText"></div>
+          <div class="mt50 f24 tr b">{{pageInfo.hospital.name}}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- page3 总检建议与结论 -->
+    <div :class="!isPrintPage && 'shadow mt10'" v-if="pageInfo.report.detail">
+      <div class="page3-h">
+        <Header :options="headerInfo" />
+      </div>
+      <div class="pa page3">
+        <div class="page3-b">
+          <div class="mt50 mb50 f64 c0 b">总检建议与结论</div>
+          <div class="mb50 f32 b">在本次体检的项目中，您有以下几方面的情况敬请注意：</div>
+          <div class="pre f20" v-html="pageInfo.report.detail"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- page4 异常解读 -->
+    <div :class="!isPrintPage && 'shadow mt10'" v-if="pageInfo.report.advice">
+      <div class="pa page3">
+        <div class="page3-h">
+          <Header :options="headerInfo" />
+        </div>
+        <div class="page3-b">
+          <div class="mt50 mb50 f64 c0 b">异常解读</div>
+          <div class="pre f20" v-html="pageInfo.report.advice"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- page5 检查详情 -->
+    <div :class="!isPrintPage && 'shadow mt10'">
+      <div class="pa page3">
+        <div class="page3-h">
+          <Header :options="headerInfo" />
+        </div>
+        <div class="page3-b">
+          <div class="mt50 mb50 f64 c0 b">检查详情</div>
+          <div class="big-item f20" v-for="(bi) in pageInfo.report.tplItems" :key="bi.id">
+            <div class="big-item-t f28">{{bi.title}}</div>
+            <div>
+              <table class="mt-table dis-hover">
+                <thead>
+                  <tr>
+                    <th
+                      class="f20 b"
+                      v-for="(th, indx) in bi.columnAttrList"
+                      :key="indx"
+                    >{{th.name}}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    :class="{'warning' : isException(row)}"
+                    v-for="(row, i) in bi.tplDetails"
+                    :key="i"
+                  >
+                    <td v-for="(td, i) in bi.columnAttrList" :key="i">
+                      {{row[td.column]}}
+                      <div v-if="row.picUrl && td.column == 'result'">
+                        <img
+                          v-for="(p, idx) in row.picUrl"
+                          :key="idx"
+                          :src="prefix + p"
+                          height="200"
+                          width="150"
+                          alt
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="bdr-t-dash p15 pt10">
+              <span>检查者:</span>
+              {{bi.doctor}}
+              <span class="ml20">检查时间:</span>
+              <span v-if="bi.examDate">{{bi.examDate | formatDateTime}}</span>
+              <span v-else></span>
+            </div>
+            <div v-if="bi.summaryTpl.isShow" class="p15 bdr-t-dash">
+              <span>小结:</span>
+              {{bi.summaryTpl.result}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 检查详情end -->
+
+    <!-- page6 声明 -->
+    <div :class="!isPrintPage && 'shadow mt10'">
+      <div class="pa page4">
+        <div class="page3-h">
+          <Header :options="headerInfo" />
+        </div>
+        <div class="page4-b">
+          <div class="mt50 mb50 f64 c0 b">声明</div>
+          <div class="pre f20" v-html="pageInfo.settings.notice"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -72,10 +192,14 @@
 import api from '@/api/fetch'
 import { formatDate } from '@/utils/tool'
 import JsBarcode from "jsbarcode";
+import Header from "./components/Header";
 
 const ossPath = 'http://test-i.oss-cn-shanghai.aliyuncs.com/'
 
 export default {
+  components: {
+    Header
+  },
   data() {
     return {
       pageInfo: {},
@@ -92,13 +216,23 @@ export default {
   asyncData(context) {
     // let query = context.query || { reportId: 4068460, hospitalId: 147 }
     let query = { reportId: 5509476, hospitalId: 147, sign: '21bba31d42e26b31fdc015f6117c172d' }
+    // let query = { reportId: 4068460, hospitalId: 147, sign: 'ad06f8c129f61ac0449e84288cbc7662' }
     return api.getReportDetailIgnoreLogin(query).then(res => {
       return { detail: res.data, pageQuery: query }
     })
   },
   computed: {
     isPrintPage() {
-      return (this.query || {}).sign
+      return (this.pageQuery || {}).sign
+    },
+    headerInfo() {
+      return {
+        reportNo: this.pageInfo.report.reportNo,
+        userName: this.pageInfo.report.userName,
+        gender: this.pageInfo.report.gender,
+        age: this.pageInfo.report.age,
+        examineDate: this.pageInfo.report.examineDate
+      }
     },
     qrcode() {
       return `${ossPath}${this.pageInfo.settings.qrcode}`
@@ -108,6 +242,18 @@ export default {
     },
   },
   methods: {
+    isException(row) {
+      // 如果包含( ↑ ↓ )符号显示为红色
+      for (var key in row) {
+        if (
+          (row[key] + "").indexOf("↑") > -1 ||
+          (row[key] + "").indexOf("↓") > -1
+        ) {
+          return true;
+        }
+      }
+      return false;
+    },
     digestReportData(info) {
       let pageInfo = info;
       pageInfo.report.tplItems = pageInfo.report.tplItems.map(bi => {
@@ -152,9 +298,6 @@ export default {
   color: #333333;
   box-sizing: border-box;
 }
-.bdr {
-  border: 1px solid red;
-}
 .pa {
   margin: 0 auto;
   font-size: 20px;
@@ -178,6 +321,7 @@ export default {
 }
 .page2 {
   width: 180mm;
+  padding-top: 10mm;
   display: flex;
   flex-direction: column;
   &-b {
@@ -186,6 +330,7 @@ export default {
 }
 .page3 {
   width: 180mm;
+  padding-top: 10mm;
   display: flex;
   flex-direction: column;
   &-b {
@@ -194,6 +339,7 @@ export default {
 }
 .page4 {
   width: 180mm;
+  padding-top: 10mm;
   display: flex;
   flex-direction: column;
   &-b {
@@ -201,9 +347,6 @@ export default {
   }
 }
 
-.mt10 {
-  margin-top: 2mm;
-}
 .b {
   font-weight: bold;
 }
@@ -249,7 +392,6 @@ export default {
   display: flex;
   &-label {
     display: inline-block;
-    text-align: right;
     width: 80px;
     margin-right: 40px;
     &::after {
@@ -277,14 +419,30 @@ export default {
     }
   }
 }
+
+.mt10 {
+  margin-top: 2mm;
+}
+.ml20 {
+  margin-left: 4mm;
+}
+.p15 {
+  padding: 3mm;
+}
+.pt10 {
+  padding-top: 2mm;
+}
 .mt25 {
-  margin-top: 25px;
+  margin-top: 4mm;
 }
 .mt50 {
-  margin-top: 50px;
+  margin-top: 10mm;
 }
 .mb50 {
-  margin-bottom: 50px;
+  margin-bottom: 10mm;
+}
+.tr {
+  text-align: right;
 }
 .pre {
   white-space: pre-wrap; /*css-3*/
@@ -334,4 +492,35 @@ export default {
 .cover-title {
   display: flex;
 }
+
+// table start
+.mt-table {
+  width: 100%;
+  table-layout: fixed;
+  word-break: break-all;
+  border-collapse: collapse;
+  td,th {
+    vertical-align: middle;
+    height: 40px;
+    padding: 8px 8px 8px 15px;
+    text-align: left;
+    font-size: 14px;
+  }
+  td {
+    border-top: 1px solid #e9eaec;
+  }
+  th {
+    background: #f8f8f9;
+    border-bottom: none;
+    color: #495060;
+    font-weight: normal;
+  }
+  &:not(.dis-hover) tr:hover {
+    background-color: #ebf7ff;;
+  }
+  .mt-table-column{
+    text-align: center !important;
+  }
+}
+// table end
 </style>
