@@ -215,7 +215,7 @@ export default {
   },
   asyncData(context) {
     // let query = context.query || { reportId: 4068460, hospitalId: 147 }
-    let query = { reportId: 5509476, hospitalId: 147, sign: '21bba31d42e26b31fdc015f6117c172d' }
+    let query = context.query.reportId ? context.query : { reportId: 5509476, hospitalId: 147, sign: '21bba31d42e26b31fdc015f6117c172d' }
     // let query = { reportId: 4068460, hospitalId: 147, sign: 'ad06f8c129f61ac0449e84288cbc7662' }
     return api.getReportDetailIgnoreLogin(query).then(res => {
       return { detail: res.data, pageQuery: query }
