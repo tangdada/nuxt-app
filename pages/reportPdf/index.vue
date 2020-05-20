@@ -154,17 +154,17 @@
                   </tr>
                 </tbody>
               </table>
-            </div>
-            <div class="bdr-t-dash p15 pt10">
-              <span>检查者:</span>
-              {{bi.doctor}}
-              <span class="ml20">检查时间:</span>
-              <span v-if="bi.examDate">{{bi.examDate | formatDateTime}}</span>
-              <span v-else></span>
-            </div>
-            <div v-if="bi.summaryTpl.isShow" class="p15 bdr-t-dash">
-              <span>小结:</span>
-              {{bi.summaryTpl.result}}
+              <div class="bdr-t-dash p15 pt10">
+                <span>检查者:</span>
+                {{bi.doctor}}
+                <span class="ml20">检查时间:</span>
+                <span v-if="bi.examDate">{{bi.examDate | formatDateTime}}</span>
+                <span v-else></span>
+              </div>
+              <div v-if="bi.summaryTpl.isShow" class="p15 bdr-t-dash">
+                <span>小结:</span>
+                {{bi.summaryTpl.result}}
+              </div>
             </div>
           </div>
         </div>
@@ -184,7 +184,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -302,7 +301,7 @@ export default {
   margin: 0 auto;
   font-size: 20px;
   box-sizing: border-box;
-  min-height: 265mm;
+  min-height: 255mm;
   page-break-after: always;
 }
 .page1 {
@@ -499,7 +498,8 @@ export default {
   table-layout: fixed;
   word-break: break-all;
   border-collapse: collapse;
-  td,th {
+  td,
+  th {
     vertical-align: middle;
     height: 40px;
     padding: 8px 8px 8px 15px;
@@ -516,9 +516,9 @@ export default {
     font-weight: normal;
   }
   &:not(.dis-hover) tr:hover {
-    background-color: #ebf7ff;;
+    background-color: #ebf7ff;
   }
-  .mt-table-column{
+  .mt-table-column {
     text-align: center !important;
   }
 }
