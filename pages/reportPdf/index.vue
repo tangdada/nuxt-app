@@ -26,7 +26,7 @@
               :key="attr.val"
               v-show="pageInfo.report[attr]"
             >
-              <div class="attr-label c8">{{attrNames[attr]}}</div>
+              <div class="attr-label c6">{{attrNames[attr]}}</div>
               <div class="attr-value">{{pageInfo.report[attr]}}</div>
             </div>
           </div>
@@ -38,19 +38,19 @@
             </div>
             <div class="img-row-desc">
               <div class="f36 b" id="hosChineseName">{{pageInfo.settings.chineseName}}</div>
-              <div class="f20 c8">{{pageInfo.settings.englishName}}</div>
+              <div class="f20 c6">{{pageInfo.settings.englishName}}</div>
             </div>
           </div>
           <div class="f20 attr mt10">
-            <div class="attr-label c8">地址</div>
+            <div class="attr-label c6">地&emsp;址</div>
             <div class="attr-value">{{(pageInfo.hospital.address || {}).fullAddress}}</div>
           </div>
           <div class="f20 attr mt10">
-            <div class="attr-label c8">电话</div>
+            <div class="attr-label c6">电&emsp;话</div>
             <div class="attr-value">{{pageInfo.settings.contactNumber}}</div>
           </div>
           <div class="f20 attr mt10">
-            <div class="attr-label c8">网址</div>
+            <div class="attr-label c6">网&emsp;址</div>
             <div class="attr-value">www.mytijian.com/m/{{pageInfo.settings.url}}</div>
           </div>
           <div class="img-row mt10">
@@ -59,7 +59,7 @@
             </div>
             <div class="img-row-desc">
               <div class="f36 b">约体检 · 查报告</div>
-              <div class="f16 c8">请关注本体检中心官方公众号</div>
+              <div class="f16 c6">请关注本体检中心官方公众号</div>
             </div>
           </div>
         </div>
@@ -358,9 +358,6 @@ export default {
 .c6 {
   color: #666;
 }
-.c8 {
-  color: #888;
-}
 
 .f16 {
   font-size: 16px * @coe!important;
@@ -482,7 +479,7 @@ export default {
   height: 102px;
   margin-right: -32px;
   margin-left: -58px;
-  margin-top: 45px;
+  margin-top: 9mm;
 }
 #barcode {
   width: 100%;
