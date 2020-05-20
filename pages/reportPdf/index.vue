@@ -465,7 +465,7 @@ export default {
   margin-top: 40px;
   &-t {
     font-weight: bold;
-    background: #3333331a;
+    background: #EAEAEA;
     padding: 4px 8px 4px 15px;
   }
 }
