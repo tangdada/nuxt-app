@@ -70,7 +70,7 @@
     <div :class="!isPrintPage && 'shadow mt10'" v-if="pageInfo.settings.guideText">
       <div class="pa page2">
         <div class="page2-h">
-          <Header :options="headerInfo" />
+          <Header v-if="!isPrintPage" :options="headerInfo" />
         </div>
         <div class="page2-b">
           <div class="mt50 mb50 f64 c0 b">导读</div>
@@ -87,7 +87,7 @@
     <!-- page3 总检建议与结论 -->
     <div :class="!isPrintPage && 'shadow mt10'" v-if="pageInfo.report.detail">
       <div class="page3-h">
-        <Header :options="headerInfo" />
+        <Header v-if="!isPrintPage" :options="headerInfo" />
       </div>
       <div class="pa page3">
         <div class="page3-b">
@@ -102,7 +102,7 @@
     <div :class="!isPrintPage && 'shadow mt10'" v-if="pageInfo.report.advice">
       <div class="pa page3">
         <div class="page3-h">
-          <Header :options="headerInfo" />
+          <Header v-if="!isPrintPage" :options="headerInfo" />
         </div>
         <div class="page3-b">
           <div class="mt50 mb50 f64 c0 b">异常解读</div>
@@ -115,7 +115,7 @@
     <div :class="!isPrintPage && 'shadow mt10'">
       <div class="pa page3">
         <div class="page3-h">
-          <Header :options="headerInfo" />
+          <Header v-if="!isPrintPage" :options="headerInfo" />
         </div>
         <div class="page3-b">
           <div class="mt50 mb50 f64 c0 b">检查详情</div>
@@ -176,7 +176,7 @@
     <div :class="!isPrintPage && 'shadow mt10'">
       <div class="pa page4">
         <div class="page3-h">
-          <Header :options="headerInfo" />
+          <Header v-if="!isPrintPage" :options="headerInfo" />
         </div>
         <div class="page4-b">
           <div class="mt50 mb50 f64 c0 b">声明</div>
@@ -301,8 +301,10 @@ export default {
   margin: 0 auto;
   font-size: 20px;
   box-sizing: border-box;
-  min-height: 255mm;
-  page-break-after: always;
+  min-height: 297mm;
+  page-break-before: always !important;
+  page-break-after: always !important;
+  page-break-inside: avoid !important;
 }
 .page1 {
   width: 160mm;
@@ -388,6 +390,8 @@ export default {
   display: flex;
   &-label {
     display: inline-block;
+    text-align: justify;
+    text-align-last: justify;
     width: 80px;
     margin-right: 40px;
     &::after {
@@ -447,16 +451,6 @@ export default {
   white-space: -o-pre-wrap; /*Opera7*/
   word-wrap: break-word; /*InternetExplorer5.5+*/
   line-height: 35px;
-}
-.mt-table {
-  border: none;
-  th {
-    background: #fff;
-    border-bottom: 1px solid #e9eaec;
-  }
-  td {
-    border-top: none;
-  }
 }
 .warning {
   background: #f9e9f3;
