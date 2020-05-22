@@ -84,12 +84,11 @@ axios.interceptors.response.use(function (config) {
 
 export default {
   isLogin() {
-    console.log('before islogin')
     return axios.get('/islogin')
   },
 
   getReportDetailIgnoreLogin(query) {
-    console.log(query)
+    console.log(new Date(), 'getReportDetailIgnoreLogin')
     return axios.get(`/reportByTemplateIgnoreLogin`, { params: query })
   }
 }
