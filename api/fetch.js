@@ -88,7 +88,6 @@ export default {
   },
 
   getReportDetailIgnoreLogin(query) {
-    console.log(new Date(), 'getReportDetailIgnoreLogin')
     return axios.get(`/reportByTemplateIgnoreLogin`, { params: query })
   }
 }
