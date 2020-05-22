@@ -1,7 +1,11 @@
 <template>
-  <div class="report-wrap">
-    <!-- page1 封面 -->
-    <div :class="!isPrintPage && 'shadow'">
+  <div>
+    <!-- PDF页头 -->
+    <Header v-if="$route.query.fetchHeader" :options="headerInfo" />
+    <!-- PDF页头 -->
+    <Footer v-if="$route.query.fetchFooter" :hospitalName="pageInfo.settings.chineseName" />
+    <!-- PDF封面 -->
+    <div v-if="$route.query.fetchCover">
       <div class="pa page1">
         <div class="cover-title d1">
           <div class="barcode-wrap">
@@ -66,121 +70,124 @@
       </div>
     </div>
 
-    <!-- page2 导读 -->
-    <div :class="!isPrintPage && 'shadow mt10'" v-if="pageInfo.settings.guideText">
-      <div class="pa page2">
-        <div class="page2-h">
-          <Header v-if="!isPrintPage" :options="headerInfo" />
-        </div>
-        <div class="page2-b">
-          <div class="mt50 mb50 f64 c0 b">导读</div>
-          <div
-            class="mb50 f32 b"
-          >尊敬的{{pageInfo.report.userName}}{{pageInfo.report.gender | gender('salutation')}}：</div>
-          <div class="mb50 f20">请您认真阅读本体检报告，如果您对本报告的检查结果有不明之处或有异议，请及时与我们联系</div>
-          <div class="pre f20" v-html="pageInfo.settings.guideText"></div>
-          <div class="mt50 f24 tr b">{{pageInfo.hospital.name}}</div>
+    <!-- PDF主体 -->
+    <div v-if="!$route.query.fetchHeader && !$route.query.fetchFooter && !$route.query.fetchCover" class="report-wrap">
+      <!-- page2 导读 -->
+      <div :class="!isPrintPage && 'shadow mt10'" v-if="pageInfo.settings.guideText">
+        <div class="pa page2">
+          <div class="page2-h">
+            <Header v-if="!isPrintPage" :options="headerInfo" />
+          </div>
+          <div class="page2-b">
+            <div class="mt50 mb50 f64 c0 b">导读</div>
+            <div
+              class="mb50 f32 b"
+            >尊敬的{{pageInfo.report.userName}}{{pageInfo.report.gender | gender('salutation')}}：</div>
+            <div class="mb50 f20">请您认真阅读本体检报告，如果您对本报告的检查结果有不明之处或有异议，请及时与我们联系</div>
+            <div class="pre f20" v-html="pageInfo.settings.guideText"></div>
+            <div class="mt50 f24 tr b">{{pageInfo.hospital.name}}</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- page3 总检建议与结论 -->
-    <div :class="!isPrintPage && 'shadow mt10'" v-if="pageInfo.report.detail">
-      <div class="page3-h">
-        <Header v-if="!isPrintPage" :options="headerInfo" />
-      </div>
-      <div class="pa page3">
-        <div class="page3-b">
-          <div class="mt50 mb50 f64 c0 b">总检建议与结论</div>
-          <div class="mb50 f32 b">在本次体检的项目中，您有以下几方面的情况敬请注意：</div>
-          <div class="pre f20" v-html="pageInfo.report.detail"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- page4 异常解读 -->
-    <div :class="!isPrintPage && 'shadow mt10'" v-if="pageInfo.report.advice">
-      <div class="pa page3">
+      <!-- page3 总检建议与结论 -->
+      <div :class="!isPrintPage && 'shadow mt10'" v-if="pageInfo.report.detail">
         <div class="page3-h">
           <Header v-if="!isPrintPage" :options="headerInfo" />
         </div>
-        <div class="page3-b">
-          <div class="mt50 mb50 f64 c0 b">异常解读</div>
-          <div class="pre f20" v-html="pageInfo.report.advice"></div>
+        <div class="pa page3">
+          <div class="page3-b">
+            <div class="mt50 mb50 f64 c0 b">总检建议与结论</div>
+            <div class="mb50 f32 b">在本次体检的项目中，您有以下几方面的情况敬请注意：</div>
+            <div class="pre f20" v-html="pageInfo.report.detail"></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- page5 检查详情 -->
-    <div :class="!isPrintPage && 'shadow mt10'">
-      <div class="pa page3">
-        <div class="page3-h">
-          <Header v-if="!isPrintPage" :options="headerInfo" />
+      <!-- page4 异常解读 -->
+      <div :class="!isPrintPage && 'shadow mt10'" v-if="pageInfo.report.advice">
+        <div class="pa page3">
+          <div class="page3-h">
+            <Header v-if="!isPrintPage" :options="headerInfo" />
+          </div>
+          <div class="page3-b">
+            <div class="mt50 mb50 f64 c0 b">异常解读</div>
+            <div class="pre f20" v-html="pageInfo.report.advice"></div>
+          </div>
         </div>
-        <div class="page3-b">
-          <div class="mt50 mb50 f64 c0 b">检查详情</div>
-          <div class="big-item f20" v-for="(bi) in pageInfo.report.tplItems" :key="bi.id">
-            <div class="big-item-t f28">{{bi.title}}</div>
-            <div>
-              <table class="mt-table dis-hover">
-                <thead>
-                  <tr>
-                    <th
-                      class="f20 b"
-                      v-for="(th, indx) in bi.columnAttrList"
-                      :key="indx"
-                    >{{th.name}}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    :class="{'warning' : isException(row)}"
-                    v-for="(row, i) in bi.tplDetails"
-                    :key="i"
-                  >
-                    <td v-for="(td, i) in bi.columnAttrList" :key="i">
-                      {{row[td.column]}}
-                      <div v-if="row.picUrl && td.column == 'result'">
-                        <img
-                          v-for="(p, idx) in row.picUrl"
-                          :key="idx"
-                          :src="prefix + p"
-                          height="200"
-                          width="150"
-                          alt
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <div class="bdr-t-dash p15 pt10">
-                <span>检查者:</span>
-                {{bi.doctor}}
-                <span class="ml20">检查时间:</span>
-                <span v-if="bi.examDate">{{bi.examDate | formatDateTime}}</span>
-                <span v-else></span>
-              </div>
-              <div v-if="bi.summaryTpl.isShow" class="p15 bdr-t-dash">
-                <span>小结:</span>
-                {{bi.summaryTpl.result}}
+      </div>
+
+      <!-- page5 检查详情 -->
+      <div :class="!isPrintPage && 'shadow mt10'">
+        <div class="pa page3">
+          <div class="page3-h">
+            <Header v-if="!isPrintPage" :options="headerInfo" />
+          </div>
+          <div class="page3-b">
+            <div class="mt50 mb50 f64 c0 b">检查详情</div>
+            <div class="big-item f20" v-for="(bi) in pageInfo.report.tplItems" :key="bi.id">
+              <div class="big-item-t f28">{{bi.title}}</div>
+              <div>
+                <table class="mt-table dis-hover">
+                  <thead>
+                    <tr>
+                      <th
+                        class="f20 b"
+                        v-for="(th, indx) in bi.columnAttrList"
+                        :key="indx"
+                      >{{th.name}}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      :class="{'warning' : isException(row)}"
+                      v-for="(row, i) in bi.tplDetails"
+                      :key="i"
+                    >
+                      <td v-for="(td, i) in bi.columnAttrList" :key="i">
+                        {{row[td.column]}}
+                        <div v-if="row.picUrl && td.column == 'result'">
+                          <img
+                            v-for="(p, idx) in row.picUrl"
+                            :key="idx"
+                            :src="prefix + p"
+                            height="200"
+                            width="150"
+                            alt
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="bdr-t-dash p15 pt10">
+                  <span>检查者:</span>
+                  {{bi.doctor}}
+                  <span class="ml20">检查时间:</span>
+                  <span v-if="bi.examDate">{{bi.examDate | formatDateTime}}</span>
+                  <span v-else></span>
+                </div>
+                <div v-if="bi.summaryTpl.isShow" class="p15 bdr-t-dash">
+                  <span>小结:</span>
+                  {{bi.summaryTpl.result}}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <!-- 检查详情end -->
+      <!-- 检查详情end -->
 
-    <!-- page6 声明 -->
-    <div :class="!isPrintPage && 'shadow mt10'">
-      <div class="pa page4">
-        <div class="page3-h">
-          <Header v-if="!isPrintPage" :options="headerInfo" />
-        </div>
-        <div class="page4-b">
-          <div class="mt50 mb50 f64 c0 b">声明</div>
-          <div class="pre f20" v-html="pageInfo.settings.notice"></div>
+      <!-- page6 声明 -->
+      <div :class="!isPrintPage && 'shadow mt10'">
+        <div class="pa page4">
+          <div class="page3-h">
+            <Header v-if="!isPrintPage" :options="headerInfo" />
+          </div>
+          <div class="page4-b">
+            <div class="mt50 mb50 f64 c0 b">声明</div>
+            <div class="pre f20" v-html="pageInfo.settings.notice"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -191,16 +198,18 @@
 import api from '@/api/fetch'
 import { formatDate } from '@/utils/tool'
 import JsBarcode from "jsbarcode";
-import Header from "./components/Header";
+import Header from "./components/header";
+import Footer from "./components/footer";
 
 const ossPath = 'http://test-i.oss-cn-shanghai.aliyuncs.com/'
 
 export default {
   components: {
-    Header
+    Header, Footer
   },
   data() {
     return {
+      query: {},
       pageInfo: {},
       attrNames: {
         mobile: "手机号",
@@ -273,10 +282,12 @@ export default {
       return pageInfo
     },
   },
+  beforeCreate() {
+  },
   created() {
     this.pageInfo = this.digestReportData(this.detail)
 
-    if (process.client) {
+    if (process.client && this.$route.query.fetchCover) {
       JsBarcode("#barcode", this.pageInfo.report.reportNo, {
         displayValue: false,
         flat: true,
@@ -459,7 +470,7 @@ export default {
   margin-top: 40px;
   &-t {
     font-weight: bold;
-    background: #EAEAEA;
+    background: #eaeaea;
     padding: 4px 8px 4px 15px;
   }
 }

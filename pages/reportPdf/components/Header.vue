@@ -37,21 +37,16 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-// 打印的时候不显示头，使用pdf插件生成的头
-@media print {
-  .head {
-    display: none;
-  }
-}
 @coe: 0.8;
 
 .head {
   position: relative;
-  padding-top: 40px;
+  height: 60px;
+  width: 100%;
   &-b {
+    padding-top: 42px;
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid #33333340;
     padding-right: 50px;
   }
 }

@@ -2,7 +2,7 @@
     "json.format.enable": false,
     "javascript.preferences.quoteStyle": "single",
     "files.autoSave": "off",
-    "editor.fontSize": 14,
+    "editor.fontSize": 13,
     "editor.detectIndentation": false,
     "editor.tabSize": 2,
     "window.zoomLevel": 0.3,
