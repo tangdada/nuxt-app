@@ -8,7 +8,7 @@
     <div v-if="$route.query.fetchCover">
       <div class="pa page1">
         <div class="cover-title d1">
-          <div class="barcode-wrap">
+          <div class="barcode-wrap" v-show="!hideJsBarcode">
             <svg id="barcode" />
           </div>
           <div>
@@ -160,14 +160,14 @@
                     </tr>
                   </tbody>
                 </table>
-                <div class="bdr-t-dash p15 pt10">
+                <div class="p15 pt10">
                   <span>检查者:</span>
                   {{bi.doctor}}
                   <span class="ml20">检查时间:</span>
                   <span v-if="bi.examDate">{{bi.examDate | formatDateTime}}</span>
                   <span v-else></span>
                 </div>
-                <div v-if="bi.summaryTpl.isShow" class="p15 bdr-t-dash">
+                <div v-if="bi.summaryTpl.isShow" class="p15">
                   <span>小结:</span>
                   {{bi.summaryTpl.result}}
                 </div>
@@ -211,6 +211,7 @@ export default {
     return {
       query: {},
       pageInfo: {},
+      hideJsBarcode: false,
       attrNames: {
         mobile: "手机号",
         idcard: "证件号",
@@ -293,6 +294,8 @@ export default {
         flat: true,
         height: 60
       });
+    } else {
+      this.hideJsBarcode = true
     }
   },
 }
@@ -474,9 +477,9 @@ export default {
     padding: 4px 8px 4px 15px;
   }
 }
-.bdr-t-dash {
-  border-top: 1px dashed #3333331a;
-}
+// .bdr-t-dash {
+//   border-top: 1px dashed #eaeaea;
+// }
 .barcode-wrap {
   display: inline-block;
   transform: rotate(270deg);
