@@ -16,7 +16,7 @@
     "cross-env": "^5.2.0",
     "express": "^4.16.4",
     "jsbarcode": "^3.11.0",
-    "nuxt": "^2.0.0"
+    "nuxt": "^2.15.8"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^2.0.0",
